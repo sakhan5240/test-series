@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4F46E5">
+    <meta name="description" content="A Premium Live Test Series Portal for Students">
+    
+    <link rel="icon" href="data:," /> 
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <title>Premium Test Series</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <noscript>
+        <div style="background: #EF4444; color: white; padding: 20px; text-align: center; font-family: sans-serif;">
+            Please enable JavaScript in your browser settings to use the Test Series Portal.
+        </div>
+    </noscript>
+
+    <div id="wave-loader" class="loader-overlay" style="display: none;">
+        <div class="wave-container">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+        </div>
+        <p id="loader-text">Loading Session...</p>
+    </div>
+
+    <div id="custom-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-card">
+            <div class="popup-icon-wrapper" id="popup-icon-container">
+                <span class="material-icons" id="popup-icon">info</span>
+            </div>
+            <h4 id="popup-title">Notification</h4>
+            <p id="popup-message">Are you sure you want to proceed?</p>
+            <div class="popup-actions">
+                <button id="popup-cancel-btn" class="btn-secondary">Cancel</button>
+                <button id="popup-confirm-btn" class="btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <main id="app-frame" aria-label="Main Application Frame">
+        
+        <section id="login-screen" class="screen active" aria-labelledby="login-title">
+            <div class="screen-content center-content">
+                <div class="login-logo-area">
+                    <span class="material-icons app-logo-icon">menu_book</span>
+                </div>
+                <h2 id="login-title">Student Portal</h2>
+                <form id="login-form">
+                    <div class="input-wrapper">
+                        <span class="material-icons input-icon">person</span>
+                        <input type="text" id="username" placeholder="Username" required autocomplete="username" autocapitalize="none" spellcheck="false" aria-label="Username">
+                    </div>
+                    <div class="input-wrapper">
+                        <span class="material-icons input-icon">lock</span>
+                        <input type="password" id="password" placeholder="Password" required autocomplete="current-password" aria-label="Password">
+                    </div>
+                    <p id="error-message" class="error" aria-live="polite"></p>
+                    <button type="submit" id="login-btn" class="btn-primary">Secure Log In</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="dashboard-screen" class="screen" aria-labelledby="welcome-text">
+            <header class="app-header">
+                <div class="header-user-profile">
+                    <span class="material-icons account-avatar">account_circle</span>
+                    <h3 id="welcome-text">Dashboard</h3>
+                </div>
+                <button id="logout-btn" class="btn-icon" aria-label="Log out">
+                    <span class="material-icons">logout</span>
+                </button>
+            </header>
+            <div class="screen-content">
+                <p class="section-title">Your Live Tests</p>
+                <div id="dynamic-test-list" aria-live="polite">
+                    </div>
+            </div>
+        </section>
+
+        <section id="test-screen" class="screen" aria-labelledby="test-title">
+            <header class="app-header">
+                <div class="test-header-left">
+                    <h3 id="test-title">Test Session</h3>
+                    <span id="question-counter" class="badge" aria-label="Question Counter">0/0</span>
+                </div>
+                <div class="timer-wrapper">
+                    <span class="material-icons timer-icon">schedule</span>
+                    <div id="timer" class="timer-badge" aria-label="Time Remaining">00:00</div>
+                </div>
+            </header>
+            
+            <div class="screen-content test-content">
+                <h3 id="question-text" aria-live="polite">Loading Question...</h3>
+                <div id="options-container" role="radiogroup" aria-label="Answer Options">
+                    </div>
+            </div>
+
+            <footer class="app-footer">
+                <button id="prev-btn" class="btn-secondary" disabled aria-label="Previous Question">
+                    <span class="material-icons btn-inline-icon">arrow_back</span> Back
+                </button>
+                <button id="next-btn" class="btn-primary" aria-label="Next Question">
+                    Next <span class="material-icons btn-inline-icon">arrow_forward</span>
+                </button>
+            </footer>
+        </section>
+
+        <section id="analysis-screen" class="screen" aria-labelledby="analysis-title">
+            <header class="app-header">
+                <div class="header-title-wrapper">
+                    <span class="material-icons insights-icon">analytics</span>
+                    <h3 id="analysis-title">Performance Insights</h3>
+                </div>
+                <button id="close-analysis-btn" class="btn-icon close-btn" aria-label="Return to Dashboard">
+                    <span class="material-icons">dashboard</span>
+                </button>
+            </header>
+            
+            <div class="screen-content">
+                <div class="analytics-card">
+                    <div class="chart-container" aria-hidden="true">
+                        <svg viewBox="0 0 36 36" class="circular-chart">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path id="chart-progress" class="circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <text x="18" y="20.35" class="percentage" id="chart-percentage">0%</text>
+                        </svg>
+                    </div>
+                    <div class="score-summary">
+                        <p id="score-text" aria-live="polite">Loading Stats...</p>
+                    </div>
+                </div>
+
+                <p class="section-title">Question Breakdown</p>
+                <div id="breakdown-list" aria-live="polite">
+                    </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
