@@ -11,7 +11,10 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <title>Premium Test Series</title>
@@ -20,12 +23,12 @@
 <body>
 
     <noscript>
-        <div style="background: #EF4444; color: white; padding: 20px; text-align: center; font-family: sans-serif;">
+        <div style="background: #EF4444; color: white; padding: 20px; text-align: center; font-family: sans-serif; position: relative; z-index: 9999;">
             Please enable JavaScript in your browser settings to use the Test Series Portal.
         </div>
     </noscript>
 
-    <div id="wave-loader" class="loader-overlay" style="display: none;">
+    <div id="wave-loader" class="loader-overlay" style="display: none;" aria-hidden="true">
         <div class="wave-container">
             <div class="wave-bar"></div>
             <div class="wave-bar"></div>
@@ -36,10 +39,10 @@
         <p id="loader-text">Loading Session...</p>
     </div>
 
-    <div id="custom-popup" class="popup-overlay" style="display: none;">
+    <div id="custom-popup" class="popup-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="popup-title">
         <div class="popup-card">
             <div class="popup-icon-wrapper" id="popup-icon-container">
-                <span class="material-icons" id="popup-icon">info</span>
+                <span class="material-icons" id="popup-icon" aria-hidden="true">info</span>
             </div>
             <h4 id="popup-title">Notification</h4>
             <p id="popup-message">Are you sure you want to proceed?</p>
@@ -52,19 +55,21 @@
 
     <main id="app-frame" aria-label="Main Application Frame">
         
-        <section id="login-screen" class="screen active" aria-labelledby="login-title">
+        <section id="login-screen" class="screen" aria-labelledby="login-title">
             <div class="screen-content center-content">
                 <div class="login-logo-area">
-                    <span class="material-icons app-logo-icon">menu_book</span>
+                    <span class="material-icons app-logo-icon" aria-hidden="true">menu_book</span>
                 </div>
-                <h2 id="login-title">Student Portal</h2>
+                <h2 id="login-title">Student Testing Portal</h2>
+                <label style="text-align: center; margin-top: -20px; font-size: 12px;">Welcome to the Testing Portal of APJAKJB</label>
+                <br>
                 <form id="login-form">
                     <div class="input-wrapper">
-                        <span class="material-icons input-icon">person</span>
+                        <span class="material-icons input-icon" aria-hidden="true">person</span>
                         <input type="text" id="username" placeholder="Username" required autocomplete="username" autocapitalize="none" spellcheck="false" aria-label="Username">
                     </div>
                     <div class="input-wrapper">
-                        <span class="material-icons input-icon">lock</span>
+                        <span class="material-icons input-icon" aria-hidden="true">lock</span>
                         <input type="password" id="password" placeholder="Password" required autocomplete="current-password" aria-label="Password">
                     </div>
                     <p id="error-message" class="error" aria-live="polite"></p>
@@ -76,11 +81,11 @@
         <section id="dashboard-screen" class="screen" aria-labelledby="welcome-text">
             <header class="app-header">
                 <div class="header-user-profile">
-                    <span class="material-icons account-avatar">account_circle</span>
+                    <span class="material-icons account-avatar" aria-hidden="true">account_circle</span>
                     <h3 id="welcome-text">Dashboard</h3>
                 </div>
                 <button id="logout-btn" class="btn-icon" aria-label="Log out">
-                    <span class="material-icons">logout</span>
+                    <span class="material-icons" aria-hidden="true">logout</span>
                 </button>
             </header>
             <div class="screen-content">
@@ -97,7 +102,7 @@
                     <span id="question-counter" class="badge" aria-label="Question Counter">0/0</span>
                 </div>
                 <div class="timer-wrapper">
-                    <span class="material-icons timer-icon">schedule</span>
+                    <span class="material-icons timer-icon" aria-hidden="true">schedule</span>
                     <div id="timer" class="timer-badge" aria-label="Time Remaining">00:00</div>
                 </div>
             </header>
@@ -110,10 +115,10 @@
 
             <footer class="app-footer">
                 <button id="prev-btn" class="btn-secondary" disabled aria-label="Previous Question">
-                    <span class="material-icons btn-inline-icon">arrow_back</span> Back
+                    <span class="material-icons btn-inline-icon" aria-hidden="true">arrow_back</span> Back
                 </button>
                 <button id="next-btn" class="btn-primary" aria-label="Next Question">
-                    Next <span class="material-icons btn-inline-icon">arrow_forward</span>
+                    Next <span class="material-icons btn-inline-icon" aria-hidden="true">arrow_forward</span>
                 </button>
             </footer>
         </section>
@@ -121,25 +126,19 @@
         <section id="analysis-screen" class="screen" aria-labelledby="analysis-title">
             <header class="app-header">
                 <div class="header-title-wrapper">
-                    <span class="material-icons insights-icon">analytics</span>
+                    <span class="material-icons insights-icon" aria-hidden="true">analytics</span>
                     <h3 id="analysis-title">Performance Insights</h3>
                 </div>
                 <button id="close-analysis-btn" class="btn-icon close-btn" aria-label="Return to Dashboard">
-                    <span class="material-icons">dashboard</span>
+                    <span class="material-icons" aria-hidden="true">dashboard</span>
                 </button>
             </header>
             
             <div class="screen-content">
-                <div class="analytics-card">
-                    <div class="chart-container" aria-hidden="true">
-                        <svg viewBox="0 0 36 36" class="circular-chart">
-                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <path id="chart-progress" class="circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <text x="18" y="20.35" class="percentage" id="chart-percentage">0%</text>
-                        </svg>
-                    </div>
+                <div class="analytics-card premium-results-card">
                     <div class="score-summary">
-                        <p id="score-text" aria-live="polite">Loading Stats...</p>
+                        <h2 id="score-text" aria-live="polite">Loading...</h2>
+                        <p id="percentage-text" class="accuracy-badge">0% Accuracy</p>
                     </div>
                 </div>
 
