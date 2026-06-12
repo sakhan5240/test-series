@@ -1,12 +1,6 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbzXeI3XN9fERgaQkEFzyEC_bIii-5cwW6coCvpSb7KZuYESVKtOyfI4YkL8ytI09xxh7g/exec"; // Update this with your latest App Script URL!
+const API_URL = "https://script.google.com/macros/s/AKfycbw4BIqiVKJa505FYsX0ffk1XbwNVgPx4ZFZq3rqud9MapEp_kbpZSr3BhHSwjg6ExlvLQ/exec";
 
 // --- APP UI ELEMENTS ---
-const loginScreen = document.getElementById('login-screen');
-const dashboardScreen = document.getElementById('dashboard-screen');
-const testScreen = document.getElementById('test-screen');
-const analysisScreen = document.getElementById('analysis-screen');
-
-// Premium Overlays
 const loaderOverlay = document.getElementById('wave-loader');
 const loaderTextElement = document.getElementById('loader-text');
 const popupOverlay = document.getElementById('custom-popup');
@@ -19,19 +13,60 @@ let userAnswers = {};
 let activeTestName = "";
 let testHistoryData = {}; 
 
-// Premium Timer Variables
+// Premium Timer & Security Variables
 let timerInterval;
 let timeRemaining = 0;
 let testEndTime = 0;
+let isTestActive = false; // SECURE LOCK: Prevents back-press cheating/glitches
 
 const optionPrefixes = ['(a) ', '(b) ', '(c) ', '(d) '];
 
-// --- PREMIUM UI CONTROLLERS ---
-function showScreen(screenElement) {
+// ==========================================
+// 1. PREMIUM SPA ROUTING (BACK-PRESS LOGIC)
+// ==========================================
+function navigate(screenId, pushToHistory = true) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    screenElement.classList.add('active');
+    const targetScreen = document.getElementById(screenId);
+    if (targetScreen) targetScreen.classList.add('active');
+
+    if (pushToHistory) {
+        history.pushState({ screen: screenId }, "", `#${screenId}`);
+    }
 }
 
+window.addEventListener('popstate', (e) => {
+    const activeScreen = document.querySelector('.screen.active');
+    
+    // ANTI-CHEAT: Block back press during a live test
+    if (activeScreen && activeScreen.id === 'test-screen' && isTestActive) {
+        history.pushState({ screen: 'test-screen' }, "", `#test-screen`);
+        showCustomPopup(
+            "Action Blocked", 
+            "You cannot go back during a <strong style='color: var(--danger);'>LIVE</strong> test. Please complete and submit it.", 
+            "danger"
+        );
+        return;
+    }
+
+    // SECURITY FIX: If test is submitted, absolutely block going back to the test screen
+    if (e.state && e.state.screen === 'test-screen' && !isTestActive) {
+        history.replaceState({ screen: 'dashboard-screen' }, "", "#dashboard-screen");
+        navigate('dashboard-screen', false);
+        return;
+    }
+
+    if (e.state && e.state.screen) {
+        navigate(e.state.screen, false);
+    } else {
+        if (loggedInUser) navigate('dashboard-screen', false);
+        else navigate('login-screen', false);
+    }
+});
+
+
+// ==========================================
+// 2. CORE UTILITIES & POPUPS
+// ==========================================
 function showLoader(text = "Loading...") {
     loaderTextElement.innerText = text;
     loaderOverlay.style.display = 'flex';
@@ -41,10 +76,8 @@ function hideLoader() {
     loaderOverlay.style.display = 'none';
 }
 
-// Custom Premium Popup System
 function showCustomPopup(title, message, type = 'info', confirmCallback = null, showCancel = false) {
     document.getElementById('popup-title').innerText = title;
-    // FIX: Changed to innerHTML so bold and colored texts render correctly
     document.getElementById('popup-message').innerHTML = message; 
     
     const iconContainer = document.getElementById('popup-icon-container');
@@ -90,15 +123,19 @@ function showCustomPopup(title, message, type = 'info', confirmCallback = null, 
     popupOverlay.style.display = 'flex';
 }
 
-// --- INIT & AUTH ---
+// ==========================================
+// 3. INIT & AUTHENTICATION
+// ==========================================
 function checkAuthSession() {
     const cachedUser = localStorage.getItem('student_username');
     if (cachedUser) {
         loggedInUser = cachedUser;
-        document.getElementById('welcome-text').innerText = `Hello, ${loggedInUser}`;
+        document.getElementById('welcome-text').innerText = `Hello Dear, ${loggedInUser}`;
+        history.replaceState({ screen: 'dashboard-screen' }, "", "#dashboard-screen");
         loadDashboard(); 
     } else {
-        showScreen(loginScreen);
+        history.replaceState({ screen: 'login-screen' }, "", "#login-screen");
+        navigate('login-screen', false);
     }
 }
 document.addEventListener("DOMContentLoaded", checkAuthSession);
@@ -142,13 +179,15 @@ document.getElementById('logout-btn').addEventListener('click', () => {
     showCustomPopup("Logout", "Are you sure you want to log out?", "warning", () => {
         loggedInUser = "";
         localStorage.removeItem('student_username');
-        showScreen(loginScreen);
+        navigate('login-screen');
     }, true);
 });
 
-// --- DYNAMIC DASHBOARD ENGINE ---
+// ==========================================
+// 4. DYNAMIC DASHBOARD ENGINE
+// ==========================================
 async function loadDashboard() {
-    showScreen(dashboardScreen);
+    navigate('dashboard-screen');
     const listContainer = document.getElementById('dynamic-test-list');
     
     showLoader("Syncing Live Dashboard...");
@@ -189,8 +228,7 @@ async function loadDashboard() {
                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                         
                         if (diffDays >= 0 && diffDays <= 5) {
-                            const formattedDate = pubDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-                            badgeHTML = `~ <span>(${formattedDate})</span> <span class="new-badge">NEW</span>`; 
+                            badgeHTML = `<span class="new-badge">NEW</span>`; 
                         }
                     }
                 }
@@ -228,7 +266,7 @@ function attachTestCardListeners() {
             if (isCompleted) {
                 const pastData = testHistoryData[activeTestName];
                 if (pastData && !pastData.error) {
-                    displayDeepAnalysis(pastData.score, pastData.total, pastData.percentage, pastData.details);
+                    displayDeepAnalysis(pastData.score, pastData.total, pastData.percentage, pastData.details, true);
                 } else {
                     showCustomPopup("Unavailable", "Analysis data is currently unavailable for this test.", "danger");
                 }
@@ -243,9 +281,11 @@ function attachTestCardListeners() {
     });
 }
 
-// --- LIVE TEST LOGIC ---
+// ==========================================
+// 5. LIVE TEST LOGIC & TIMER
+// ==========================================
 async function startLiveTest(testId, durationMins) {
-    showLoader("Preparing secure test environment...");
+    showLoader("Preparing the test...");
     
     try {
         const response = await fetch(API_URL, {
@@ -262,11 +302,13 @@ async function startLiveTest(testId, durationMins) {
             currentQuestionIndex = 0;
             userAnswers = {}; 
             document.getElementById('test-title').innerText = testId.replace(/_/g, ' ');
+            
+            isTestActive = true; // LOCK ACTIVE
             renderQuestion();
             startTimer(durationMins * 60); 
-            showScreen(testScreen);
+            navigate('test-screen'); 
         } else {
-            showCustomPopup("Error", "Questions for this test are not uploaded yet.", "danger");
+            showCustomPopup("Coming Soon", "Questions are not uploaded yet.", "danger");
         }
     } catch (error) {
         showCustomPopup("Connection Error", "Failed to initialize test engine. Check connection.", "danger");
@@ -275,7 +317,6 @@ async function startLiveTest(testId, durationMins) {
     }
 }
 
-// Premium Timestamp-Based Timer
 function startTimer(seconds) {
     clearInterval(timerInterval);
     testEndTime = Date.now() + (seconds * 1000);
@@ -361,7 +402,6 @@ document.getElementById('next-btn').addEventListener('click', () => {
         const totalQ = currentQuestions.length;
         
         if (answeredCount < totalQ) {
-            // FIX: String issue resolved here.
             showCustomPopup(
                 "Incomplete Submission", 
                 `You have only answered ${answeredCount} out of ${totalQ} questions.<br>Are you sure you want to submit?`, 
@@ -370,7 +410,6 @@ document.getElementById('next-btn').addEventListener('click', () => {
                 true
             );
         } else {
-            // FIX: Safe string formatting for the RED "LIVE" tag
             showCustomPopup(
                 "Submit Test", 
                 "This is a <strong style='color: var(--danger); font-weight: 800;'>LIVE</strong> test. No changes allowed after submission. Proceed?", 
@@ -382,9 +421,13 @@ document.getElementById('next-btn').addEventListener('click', () => {
     }
 });
 
-// --- SUBMISSION & ANALYSIS ---
+
+// ==========================================
+// 6. PREMIUM DIRECT RESULTS DISPLAY (NO RING)
+// ==========================================
 async function processSubmission() {
     clearInterval(timerInterval);
+    timeRemaining = 0; 
     showLoader("Grading your test securely...");
 
     try {
@@ -399,8 +442,13 @@ async function processSubmission() {
 
         if (result.success) {
             hideLoader();
-            showCustomPopup("Test Submitted!", `You scored ${result.score} out of ${result.total}.`, "success", () => {
-                displayDeepAnalysis(result.score, result.total, result.percentage, result.analysis);
+            isTestActive = false; // REMOVE LOCK
+            
+            // HISTORY OVERWRITE: User can't go back to test
+            history.replaceState({ screen: 'analysis-screen' }, "", "#analysis-screen");
+            
+            showCustomPopup("Test Submitted!", "Your results have been processed successfully.", "success", () => {
+                displayDeepAnalysis(result.score, result.total, result.percentage, result.analysis, false);
             });
         } else {
             hideLoader();
@@ -409,27 +457,24 @@ async function processSubmission() {
     } catch (e) {
         hideLoader();
         showCustomPopup("Network Failure", "Submission failed due to network error. Try submitting again.", "danger");
-        startTimer(timeRemaining); // Resume timer if it failed
+        startTimer(timeRemaining); 
     }
 }
 
-function displayDeepAnalysis(score, total, percentage, detailsArray) {
-    document.getElementById('chart-progress').style.strokeDasharray = `0, 100`;
-    
+function displayDeepAnalysis(score, total, percentage, detailsArray, pushToHistory = true) {
+    // Premium Direct Text Injection (No Ring Variables)
     let cleanPercentage = parseFloat(percentage);
-    if (isNaN(cleanPercentage)) {
+    if (isNaN(cleanPercentage) || cleanPercentage == null) {
         cleanPercentage = total > 0 ? ((score / total) * 100) : 0;
     }
-    let displayPercentage = cleanPercentage.toFixed(1).replace(/\.0$/, ''); 
-    
-    setTimeout(() => {
-        document.getElementById('chart-percentage').innerText = `${displayPercentage}%`;
-        document.getElementById('chart-progress').style.strokeDasharray = `${cleanPercentage}, 100`;
-        document.getElementById('score-text').innerText = `You scored ${score} out of ${total}`;
+    let displayPercentage = cleanPercentage % 1 === 0 ? cleanPercentage.toFixed(0) : cleanPercentage.toFixed(1);
 
-        const progressColor = cleanPercentage >= 70 ? "var(--success)" : cleanPercentage >= 40 ? "var(--warning)" : "var(--danger)";
-        document.getElementById('chart-progress').style.stroke = progressColor;
-    }, 50);
+    // Dynamic color coding based on performance
+    const badgeColor = cleanPercentage >= 70 ? "var(--success)" : cleanPercentage >= 40 ? "var(--warning)" : "var(--danger)";
+
+    document.getElementById('score-text').innerHTML = `Final Score<br><span class="highlight-score" style="color: ${badgeColor}">${score} <span style="font-size:24px; color:var(--text-muted)">/ ${total}</span></span>`;
+    document.getElementById('percentage-text').innerText = `${displayPercentage}% Accuracy`;
+    document.getElementById('percentage-text').style.backgroundColor = badgeColor;
 
     const breakdownList = document.getElementById('breakdown-list');
     breakdownList.innerHTML = "";
@@ -448,9 +493,11 @@ function displayDeepAnalysis(score, total, percentage, detailsArray) {
         breakdownList.appendChild(div);
     });
 
-    showScreen(analysisScreen);
+    // Clean SPA routing via core navigation engine
+    navigate('analysis-screen', pushToHistory);
 }
 
+// Back to dashboard from Analysis
 document.getElementById('close-analysis-btn').addEventListener('click', () => {
     loadDashboard(); 
 });
