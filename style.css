@@ -1,10 +1,10 @@
 :root {
     --primary: #4F46E5;
     --primary-hover: #4338CA;
-    --bg-color: #F9FAFB; /* Ultra-clean light gray for premium look */
+    --bg-color: #F9FAFB;
     --card-bg: #FFFFFF;
     --text-main: #111827;
-    --text-muted: #4B5563; /* Enhanced contrast for high visibility */
+    --text-muted: #4B5563;
     --border: #F3F4F6;
     --border-dark: #E5E7EB;
     --success: #10B981;
@@ -22,17 +22,18 @@
 }
 
 body { 
-    background-color: #0F172A; /* Slate 900 professional backdrop for desktop */
+    background-color: #0F172A; 
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    height: 100vh; 
+    height: 100vh; /* Fallback for older browsers */
+    height: 100dvh; /* FIX 1: Dynamic Viewport limits exactly above mobile navigation bar */
     overflow: hidden; 
-    user-select: none; /* Prevents text copying during test */
+    user-select: none; 
 }
 
 input, p.correct-ans, p.user-ans, .review-item h5 {
-    user-select: auto; /* Allows inputs and review text selection safely */
+    user-select: auto; 
 }
 
 /* Main App Container (Strict Mobile Frame Style) */
@@ -52,7 +53,7 @@ input, p.correct-ans, p.user-ans, .review-item h5 {
     height: 100%; 
     flex-direction: column; 
     opacity: 0; 
-    will-change: transform, opacity; /* Activates GPU Hardware Acceleration */
+    will-change: transform, opacity; 
     animation: slideUpFade 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards; 
 }
 .screen.active { display: flex; }
@@ -65,12 +66,13 @@ input, p.correct-ans, p.user-ans, .review-item h5 {
 .screen-content { 
     flex: 1; 
     overflow-y: auto; 
-    padding: 24px 20px; 
+    /* FIX 2: Added env(safe-area) & 40px bottom padding so last result question is NEVER cut off */
+    padding: 24px 20px calc(40px + env(safe-area-inset-bottom)); 
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 }
 
-/* Custom Minimal Scrollbars (No Heavy Load) */
+/* Custom Minimal Scrollbars */
 .screen-content::-webkit-scrollbar { width: 4px; }
 .screen-content::-webkit-scrollbar-track { background: transparent; }
 .screen-content::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
@@ -85,6 +87,7 @@ input, p.correct-ans, p.user-ans, .review-item h5 {
     justify-content: space-between; 
     align-items: center; 
     border-bottom: 1px solid var(--border-dark); 
+    flex-shrink: 0; /* FIX 3: Prevents header from being squished */
 }
 .app-header h3 { font-size: 18px; font-weight: 700; color: var(--text-main); letter-spacing: -0.3px; }
 .test-header-left { display: flex; align-items: center; gap: 10px; }
@@ -104,6 +107,7 @@ input, p.correct-ans, p.user-ans, .review-item h5 {
     display: flex; 
     justify-content: space-between; 
     border-top: 1px solid var(--border-dark); 
+    flex-shrink: 0; /* FIX 4: Prevents Next/Back buttons from being pushed out of frame */
 }
 
 /* Form & Input Elements */
@@ -207,25 +211,20 @@ button {
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.05); 
 }
 
-/* Bulletproof Analytics Chart Ring Alignment */
-.analytics-card { background: var(--card-bg); border-radius: 24px; padding: 24px; text-align: center; margin-bottom: 24px; border: 1.5px solid var(--border); }
-
-
-/* Premium Direct Score Display */
+/* Premium Direct Score Display (Duplicate Fixed) */
 .premium-results-card { 
     padding: 32px 20px; 
     background: linear-gradient(145deg, #FFFFFF 0%, #F9FAFB 100%); 
     border: 2px solid var(--border-dark); 
     box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+    border-radius: 24px;
+    margin-bottom: 24px;
 }
 .score-summary { text-align: center; }
 #score-text { font-size: 16px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 .highlight-score { display: block; font-size: 42px; font-weight: 900; margin-top: 8px; font-family: -apple-system, sans-serif; line-height: 1.1; }
 .accuracy-badge { display: inline-block; background: var(--primary); color: white; padding: 8px 16px; border-radius: 30px; font-size: 15px; font-weight: 700; margin-top: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-
-
-#score-text { font-size: 16px; font-weight: 700; color: var(--text-main); }
 .section-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 14px; letter-spacing: 0.8px; }
 
 /* Student Review Cards Breakdown */
