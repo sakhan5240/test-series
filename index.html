@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#4F46E5">
-    <meta name="description" content="A Premium Live Test Series Portal for Students">
+    <meta name="description" content="Premium Android-Style Test Series & Learning Portal">
     
     <link rel="icon" href="data:," /> 
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <title>Premium Test Series</title>
+    <title>Student Testing Portal</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -53,15 +53,45 @@
         </div>
     </div>
 
+    <div id="drawer-overlay" class="drawer-overlay" style="display: none;"></div>
+
+    <aside id="side-drawer" class="side-drawer">
+        <div class="drawer-header">
+            <span class="material-icons drawer-avatar">account_circle</span>
+            <div class="drawer-user-info">
+                <h4 id="drawer-username">Student Name</h4>
+                <p>Premium Account</p>
+            </div>
+        </div>
+        <nav class="drawer-menu">
+            <button class="drawer-item active" id="menu-home-btn">
+                <span class="material-icons">home</span> Home Dashboard
+            </button>
+            <button class="drawer-item" id="menu-notes-btn">
+                <span class="material-icons">description</span> PDF Notes & Study Material
+            </button>
+            <button class="drawer-item" id="menu-bookmarks-btn">
+                <span class="material-icons">bookmark</span> Bookmarked Questions
+            </button>
+            <button class="drawer-item" id="menu-dark-toggle">
+                <span class="material-icons">dark_mode</span> Dark Theme
+            </button>
+            <div class="drawer-divider"></div>
+            <button class="drawer-item logout-item" id="drawer-logout-btn">
+                <span class="material-icons">logout</span> Sign Out
+            </button>
+        </nav>
+    </aside>
+
     <main id="app-frame" aria-label="Main Application Frame">
         
-        <section id="login-screen" class="screen" aria-labelledby="login-title">
+        <section id="login-screen" class="screen active" aria-labelledby="login-title">
             <div class="screen-content center-content">
                 <div class="login-logo-area">
                     <span class="material-icons app-logo-icon" aria-hidden="true">menu_book</span>
                 </div>
                 <h2 id="login-title">Student Testing Portal</h2>
-                <label style="text-align: center; margin-top: -20px; font-size: 12px;">Welcome to the Testing Portal of APJAKJB</label>
+                <label style="text-align: center; margin-top: -20px; font-size: 12px; color: var(--text-muted);">Welcome to the Premium Testing Portal of APJAKJB</label>
                 <br>
                 <form id="login-form">
                     <div class="input-wrapper">
@@ -78,25 +108,178 @@
             </div>
         </section>
 
-        <section id="dashboard-screen" class="screen" aria-labelledby="welcome-text">
+        <section id="main-app-shell" class="screen" style="display: none;">
             <header class="app-header">
-                <div class="header-user-profile">
-                    <span class="material-icons account-avatar" aria-hidden="true">account_circle</span>
-                    <h3 id="welcome-text">Dashboard</h3>
+                <div class="header-left">
+                    <button id="menu-toggle-btn" class="btn-icon-nav" aria-label="Open Navigation Menu">
+                        <span class="material-icons">menu</span>
+                    </button>
+                    <h3 id="app-bar-title">Home</h3>
                 </div>
-                <button id="logout-btn" class="btn-icon" aria-label="Log out">
-                    <span class="material-icons" aria-hidden="true">logout</span>
-                </button>
+                <div class="header-right">
+                    <button id="notification-btn" class="btn-icon-nav" aria-label="Notifications">
+                        <span class="material-icons">notifications</span>
+                    </button>
+                </div>
             </header>
-            <div class="screen-content">
-                <p class="section-title">Your Live Tests</p>
-                <div id="dynamic-test-list" aria-live="polite">
+
+            <div class="shell-content-container">
+                
+                <div id="home-tab" class="tab-view active">
+                    <div class="screen-content">
+                        <div class="welcome-section">
+                            <h3 id="welcome-text">Hello Dear, Student</h3>
+                            <p>Ready to sharpen your knowledge today?</p>
+                        </div>
+
+                        <div class="hero-banner-carousel">
+                            <div class="banner-slide">
+                                <span class="material-icons banner-icon">campaign</span>
+                                <div class="banner-text">
+                                    <h4>Mega Mock Test Series Live!</h4>
+                                    <p>Attempt the newly added standard format test papers now.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="section-title">Explore Categories</p>
+                        <div class="features-grid">
+                            <div class="grid-card active-card" id="grid-action-tests">
+                                <div class="grid-icon-box primary-box">
+                                    <span class="material-icons">assignment</span>
+                                </div>
+                                <h4>Test Series</h4>
+                                <p>Live Mock Tests</p>
+                            </div>
+                            <div class="grid-card" id="grid-action-notes">
+                                <div class="grid-icon-box success-box">
+                                    <span class="material-icons">description</span>
+                                </div>
+                                <h4>PDF Notes</h4>
+                                <p>Revision E-Books</p>
+                            </div>
+                            <div class="grid-card" id="grid-action-quiz">
+                                <div class="grid-icon-box warning-box">
+                                    <span class="material-icons">flash_on</span>
+                                </div>
+                                <h4>Daily Quiz</h4>
+                                <p>Quick Practice</p>
+                            </div>
+                            <div class="grid-card" id="grid-action-papers">
+                                <div class="grid-icon-box danger-box">
+                                    <span class="material-icons">history_edu</span>
+                                </div>
+                                <h4>PYQs Bank</h4>
+                                <p>Previous Papers</p>
+                            </div>
+                        </div>
+
+                        <div id="test-series-section-wrapper">
+                            <p class="section-title">Available Live Tests</p>
+                            <div id="dynamic-test-list" aria-live="polite">
+                                </div>
+                        </div>
+
+                        <div id="pdf-notes-section-wrapper" style="display: none;">
+                            <p class="section-title">Premium PDF Notes</p>
+                            <div id="dynamic-notes-list" class="notes-list-container">
+                                <div class="note-item-card">
+                                    <div class="note-info">
+                                        <h4>Physics - Electrostatics Revision Notes</h4>
+                                        <p>Size: 4.2 MB • PDF Format</p>
+                                    </div>
+                                    <button class="btn-secondary note-dl-btn"><span class="material-icons">download</span></button>
+                                </div>
+                                <div class="note-item-card">
+                                    <div class="note-info">
+                                        <h4>Chemistry - Organic Mechanics Sheet</h4>
+                                        <p>Size: 2.8 MB • PDF Format</p>
+                                    </div>
+                                    <button class="btn-secondary note-dl-btn"><span class="material-icons">download</span></button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+                <div id="results-tab" class="tab-view" style="display: none;">
+                    <div class="screen-content">
+                        <div class="tab-header-block">
+                            <h3>Performance History</h3>
+                            <p>Track your score analytics of past submitted sessions.</p>
+                        </div>
+                        <div id="past-results-list" class="past-results-container">
+                            </div>
+                    </div>
+                </div>
+
+                <div id="profile-tab" class="tab-view" style="display: none;">
+                    <div class="screen-content">
+                        <div class="profile-card-premium">
+                            <span class="material-icons profile-big-avatar">account_circle</span>
+                            <h3 id="profile-student-name">Student Account</h3>
+                            <span class="badge-premium">Rank Booster tier</span>
+                        </div>
+
+                        <p class="section-title">Account Details</p>
+                        <div class="profile-details-list">
+                            <div class="profile-detail-item">
+                                <span class="material-icons">email</span>
+                                <div class="detail-text">
+                                    <label>Registered Username</label>
+                                    <p id="profile-meta-username">-</p>
+                                </div>
+                            </div>
+                            <div class="profile-detail-item">
+                                <span class="material-icons">verified</span>
+                                <div class="detail-text">
+                                    <label>Portal Status</label>
+                                    <p style="color: var(--success); font-weight: 700;">Active / Authorized</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="section-title">Preferences</p>
+                        <div class="profile-details-list">
+                            <div class="profile-detail-item actionable-item" id="profile-dark-toggle-row">
+                                <span class="material-icons">nights_stay</span>
+                                <div class="detail-text">
+                                    <label>Dark Interface</label>
+                                    <p>Toggle Night Mode look</p>
+                                </div>
+                                <span class="material-icons toggle-arrow-icon">chevron_right</span>
+                            </div>
+                            <div class="profile-detail-item actionable-item logout-item-row" id="profile-logout-btn">
+                                <span class="material-icons">power_settings_new</span>
+                                <div class="detail-text">
+                                    <label>Secure Log Out</label>
+                                    <p>Clear session tokens safely</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
+            <footer class="app-bottom-nav">
+                <button class="nav-tab-btn active" id="tab-btn-home">
+                    <span class="material-icons">home</span>
+                    <span class="tab-label">Home</span>
+                </button>
+                <button class="nav-tab-btn" id="tab-btn-results">
+                    <span class="material-icons">analytics</span>
+                    <span class="tab-label">Results</span>
+                </button>
+                <button class="nav-tab-btn" id="tab-btn-profile">
+                    <span class="material-icons">person</span>
+                    <span class="tab-label">Profile</span>
+                </button>
+            </footer>
         </section>
 
         <section id="test-screen" class="screen" aria-labelledby="test-title">
-            <header class="app-header">
+            <header class="app-header full-lock-header">
                 <div class="test-header-left">
                     <h3 id="test-title">Test Session</h3>
                     <span id="question-counter" class="badge" aria-label="Question Counter">0/0</span>
@@ -130,7 +313,7 @@
                     <h3 id="analysis-title">Performance Insights</h3>
                 </div>
                 <button id="close-analysis-btn" class="btn-icon close-btn" aria-label="Return to Dashboard">
-                    <span class="material-icons" aria-hidden="true">dashboard</span>
+                    <span class="material-icons" aria-hidden="true">arrow_back</span>
                 </button>
             </header>
             
