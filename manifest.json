@@ -3,7 +3,7 @@
   "name": "APJAKJB Premium Testing Portal",
   "short_name": "TestPortal",
   "description": "Premium native Android-style test series and learning portal for students.",
-  "start_url": "/index.html?source=pwa",
+  "start_url": "./index.html?source=pwa",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "background_color": "#0F172A",
@@ -37,14 +37,14 @@
       "name": "Start Mock Test",
       "short_name": "Live Tests",
       "description": "Go directly to the active test series dashboard",
-      "url": "/index.html?source=pwa_shortcut#main-app-shell",
+      "url": "./index.html?source=pwa_shortcut#main-app-shell",
       "icons": [{ "src": "icon-192x192.png", "sizes": "192x192" }]
     },
     {
       "name": "Check Results",
       "short_name": "Results",
       "description": "View your past performance and deep analysis",
-      "url": "/index.html?source=pwa_shortcut#results-tab",
+      "url": "./index.html?source=pwa_shortcut#results-tab",
       "icons": [{ "src": "icon-192x192.png", "sizes": "192x192" }]
     }
   ]
